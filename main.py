@@ -43,14 +43,19 @@ def main():
                 else:
                     # TODO
                     continue
-                uploaded_file = pyuploadgram_sesh.upload_file(filename=post.title,
+                file_extension = post.video_url.split('.')[-1]
+                file_name = f"{post.title}.{file_extension}"
+                uploaded_file = pyuploadgram_sesh.upload_file(filename=file_name,
                                                               file=b_video
                                                               )
-                reply_text = f"# Direkt Link Hazır: [TIKLA]({uploaded_file.url})\r\n\n[\[source-code\]](https://github.com/KGBTR/Reddit-Save-Bot)"
+                reply_text = f"# Direkt Link Hazır: [TIKLA]({uploaded_file.url})\r\n\n" \
+                             f"[[source-code]](https://github.com/KGBTR/Reddit-Save-Bot)"
 
             elif post.is_img:
                 img_url = post.url
-                uploaded_file = pyuploadgram_sesh.upload_file(filename=post.title,
+                file_extension = post.url.split('.')[-1]
+                file_name = f"{post.title}.{file_extension}"
+                uploaded_file = pyuploadgram_sesh.upload_file(filename=file_name,
                                                               file=img_url
                                                               )
                 reply_text = f"# Direkt Link Hazır: [TIKLA]({uploaded_file.url})\r\n\n[\[source-code\]](https://github.com/KGBTR/Reddit-Save-Bot)"
