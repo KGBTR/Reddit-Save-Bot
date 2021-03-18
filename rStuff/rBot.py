@@ -10,6 +10,12 @@ from time import sleep, time
 import logging
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    datefmt="%d/%m/%Y %H:%M:%S",
+    format="%(asctime)s, %(levelname)s [%(filename)s:%(lineno)d] %(funcName)s(): %(message)s",
+)
+
 
 class BlockAll(cookiejar.CookiePolicy):
     return_ok = (

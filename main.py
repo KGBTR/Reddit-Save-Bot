@@ -10,6 +10,9 @@ from environ import (
 from subprocess import PIPE, Popen
 import PyUploadGram
 from time import sleep
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def prep_reddit_video(video_url: str) -> bytes:
@@ -17,8 +20,7 @@ def prep_reddit_video(video_url: str) -> bytes:
     dot_i = video_url[dash_i:].find(".")
     to_rep = video_url[dash_i:dash_i + dot_i]
     audio_url = video_url.replace(to_rep, "audio")
-
-    p = Popen([ffmpeg_dir, '-y', '-i', audio_url, '-r', '30', '-i', video_url, '-filter:a', 'aresample=async=1',
+    p = Popen([ffmpeg_dir, '-y', '-i', audio_url, '-i', video_url, '-filter:a', 'aresample=async=1',
                '-f', 'mp4', '-c:v', 'copy', '-movflags', 'frag_keyframe+empty_moov', '-'], stdout=PIPE, stderr=PIPE)
     output, err = p.communicate()
     p.wait()
@@ -33,7 +35,7 @@ def main():
         for notif in save_bot.check_inbox(rkind='t1', read_if_not_rkind=True):
             if 'save' not in notif.body.lower():
                 continue
-            save_bot.read_notifs([notif])
+            logger.info(notif)
             post = save_bot.get_info_by_id(notif.post_id)
             if post.is_video:
                 if post.domain == "v.redd.it":
@@ -44,17 +46,19 @@ def main():
                 uploaded_file = pyuploadgram_sesh.upload_file(filename=post.title,
                                                               file=b_video
                                                               )
-                save_bot.send_reply(f"hazır [{post.title}]({uploaded_file.url})", notif)
+                reply_text = f"# Direkt Link Hazır: [TIKLA]({uploaded_file.url})\r\n\n[\[source-code\]](https://github.com/KGBTR/Reddit-Save-Bot)"
 
             elif post.is_img:
                 img_url = post.url
                 uploaded_file = pyuploadgram_sesh.upload_file(filename=post.title,
                                                               file=img_url
                                                               )
-                save_bot.send_reply(f"hazır [{post.title}]({uploaded_file.url})", notif)
+                reply_text = f"# Direkt Link Hazır: [TIKLA]({uploaded_file.url})\r\n\n[\[source-code\]](https://github.com/KGBTR/Reddit-Save-Bot)"
             else:
                 # TODO
                 continue
+            save_bot.send_reply(reply_text, notif)
+            save_bot.read_notifs([notif])
         sleep(7)
 
 
