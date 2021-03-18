@@ -31,9 +31,9 @@ def main():
 
     while True:
         for notif in save_bot.check_inbox(rkind='t1', read_if_not_rkind=True):
-            save_bot.read_notifs([notif])
             if 'save' not in notif.body.lower():
                 continue
+            save_bot.read_notifs([notif])
             post = save_bot.get_info_by_id(notif.post_id)
             if post.is_video:
                 if post.domain == "v.redd.it":
