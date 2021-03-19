@@ -4,66 +4,22 @@ from environ import (
     client_id,
     client_secret,
     bot_username,
-    bot_pass,
-    ffmpeg_dir
+    bot_pass
 )
-from subprocess import PIPE, Popen
-import PyUploadGram
+from SaveBot import SaveBot
 from time import sleep
-import logging
-
-logger = logging.getLogger(__name__)
-
-
-def prep_reddit_video(video_url: str) -> bytes:
-    dash_i = video_url.find("_") + 1
-    dot_i = video_url[dash_i:].find(".")
-    to_rep = video_url[dash_i:dash_i + dot_i]
-    audio_url = video_url.replace(to_rep, "audio")
-    p = Popen([ffmpeg_dir, '-y', '-i', audio_url, '-i', video_url, '-filter:a', 'aresample=async=1',
-               '-f', 'mp4', '-c:v', 'copy', '-movflags', 'frag_keyframe+empty_moov', '-'], stdout=PIPE, stderr=PIPE)
-    output, err = p.communicate()
-    p.wait()
-    return output
 
 
 def main():
     save_bot = rBot(useragent, client_id, client_secret, bot_username, bot_pass)
-    pyuploadgram_sesh = PyUploadGram.Session()
+    savr = SaveBot(save_bot)
 
     while True:
         for notif in save_bot.check_inbox(rkind='t1', read_if_not_rkind=True):
             if 'save' not in notif.body.lower():
                 continue
-            logger.info(notif)
-            post = save_bot.get_info_by_id(notif.post_id)
-            if post.is_video:
-                if post.domain == "v.redd.it":
-                    b_video = prep_reddit_video(post.video_url)
-                else:
-                    # TODO
-                    continue
-                file_extension = post.video_url.split('.')[-1]
-                file_name = f"{post.title}.{file_extension}"
-                uploaded_file = pyuploadgram_sesh.upload_file(filename=file_name,
-                                                              file=b_video
-                                                              )
-                reply_text = f"# Direkt Link Hazır: [TIKLA]({uploaded_file.url})\r\n\n" \
-                             f"[[source-code]](https://github.com/KGBTR/Reddit-Save-Bot)"
-
-            elif post.is_img:
-                img_url = post.url
-                file_extension = post.url.split('.')[-1]
-                file_name = f"{post.title}.{file_extension}"
-                uploaded_file = pyuploadgram_sesh.upload_file(filename=file_name,
-                                                              file=img_url
-                                                              )
-                reply_text = f"# Direkt Link Hazır: [TIKLA]({uploaded_file.url})\r\n\n[\[source-code\]](https://github.com/KGBTR/Reddit-Save-Bot)"
             else:
-                # TODO
-                continue
-            save_bot.send_reply(reply_text, notif)
-            save_bot.read_notifs([notif])
+                savr.upload_and_send_from_notif(notif)
         sleep(7)
 
 

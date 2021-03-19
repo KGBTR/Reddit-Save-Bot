@@ -1,0 +1,1 @@
+from .vredditMerger import vredditMerger
