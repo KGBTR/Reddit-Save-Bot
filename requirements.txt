@@ -1,1 +1,4 @@
 git+git://github.com/scrubjay55/PyUploadGram@main
+python-dotenv
+requests
+sentry-sdk
