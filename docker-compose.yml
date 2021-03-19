@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  main:
+    init: true
+    build:
+      context: .
+      target: base-stage
+    image: kgbtrbot-save:main
+    container_name: kgbtrbot-save-main
+    working_dir: /app
+    restart: on-failure
+    env_file: .env
+    volumes:
+      - ./src/:/app/
+    networks:
+      - net
+    command: python main.py
+
+networks:
+  net:
+    driver: bridge
