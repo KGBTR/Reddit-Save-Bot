@@ -1,7 +1,6 @@
 from rStuff import rBot, rNotif
 from environ import FFMPEG_DIR
 import PyUploadGram
-from logger import logger
 from vredditMerger import vredditMerger
 
 
@@ -22,9 +21,12 @@ class SaveBot:
                 return
             file_extension = post.video_url.split(".")[-1]
             file_name = f"{post.title}.{file_extension}"
-            uploaded_file = self.pyuploadgram_sesh.upload_file(
-                filename=file_name, file=b_video
-            )
+            try:
+                uploaded_file = self.pyuploadgram_sesh.upload_file(
+                    filename=file_name, file=b_video
+                )
+            except:
+                return
             reply_text = (
                 f"# Direkt Link Hazır: [INDIR]({uploaded_file.url})\r\n\n"
                 f"^[source-code](https://github.com/KGBTR/Reddit-Save-Bot)"
@@ -34,9 +36,12 @@ class SaveBot:
             img_url = post.url
             file_extension = post.url.split(".")[-1]
             file_name = f"{post.title}.{file_extension}"
-            uploaded_file = self.pyuploadgram_sesh.upload_file(
-                filename=file_name, file=img_url
-            )
+            try:
+                uploaded_file = self.pyuploadgram_sesh.upload_file(
+                    filename=file_name, file=img_url
+                )
+            except:
+                return
             reply_text = (
                 f"# Direkt Link Hazır: [INDIR]({uploaded_file.url})\r\n\n"
                 f"^[source-code](https://github.com/KGBTR/Reddit-Save-Bot)"

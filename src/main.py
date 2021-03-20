@@ -6,50 +6,13 @@ from environ import (
     client_secret,
     bot_username,
     bot_pass,
-    FFMPEG_DIR,
     SENTRY_USE,
     SENTRY_DSN,
     SENTRY_TRACES_SAMPLE_RATE,
 )
 from SaveBot import SaveBot
-from subprocess import PIPE, Popen
 import sentry_sdk
-import PyUploadGram
 from time import sleep
-
-
-def prep_reddit_video(video_url: str) -> bytes:
-    dash_i = video_url.find("_") + 1
-    dot_i = video_url[dash_i:].find(".")
-    to_rep = video_url[dash_i : dash_i + dot_i]
-    audio_url = video_url.replace(to_rep, "audio")
-
-    p = Popen(
-        [
-            FFMPEG_DIR,
-            "-y",
-            "-i",
-            audio_url,
-            "-r",
-            "30",
-            "-i",
-            video_url,
-            "-filter:a",
-            "aresample=async=1",
-            "-f",
-            "mp4",
-            "-c:v",
-            "copy",
-            "-movflags",
-            "frag_keyframe+empty_moov",
-            "-",
-        ],
-        stdout=PIPE,
-        stderr=PIPE,
-    )
-    output, err = p.communicate()
-    p.wait()
-    return output
 
 
 def main():
@@ -58,9 +21,7 @@ def main():
 
     while True:
         for notif in save_bot.check_inbox(rkind="t1", read_if_not_rkind=True):
-            if "save" not in notif.body.lower():
-                continue
-            else:
+            if "save" in notif.body.lower():
                 save.upload_and_send_from_notif(notif)
         sleep(7)
 
@@ -73,5 +34,5 @@ if __name__ == "__main__":
         )
         logger.info("Sentry initialization")
     else:
-        logger.warn("Sentry skipped")
+        logger.warning("Sentry skipped")
     main()
