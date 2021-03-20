@@ -23,6 +23,11 @@
       "value": "production",
       "description": "It controls the production and development situations. The default is development. But set as production."
     },
+    "FFMPEG_DIR": {
+      "required": true,
+      "value": "ffmpeg",
+      "description": "FFMPEG location. The default is ffmpeg."
+    },
     "SENTRY_USE": {
       "required": true,
       "value": "False",
