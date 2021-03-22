@@ -17,6 +17,7 @@ class SaveBot:
                     FFMPEG_DIR=FFMPEG_DIR, video_url=post.video_url
                 )
             else:
+                self.rbot.read_notifs([notif])
                 # TODO
                 return
             file_extension = post.video_url.split(".")[-1]
@@ -26,6 +27,7 @@ class SaveBot:
                     filename=file_name, file=b_video
                 )
             except:
+                self.rbot.read_notifs([notif])
                 return
             reply_text = (
                 f"# Direkt Link Hazır: [INDIR]({uploaded_file.url})\r\n\n"
@@ -47,6 +49,7 @@ class SaveBot:
                 f"^[source-code](https://github.com/KGBTR/Reddit-Save-Bot)"
             )
         else:
+            self.rbot.read_notifs([notif])
             # TODO
             return
         self.rbot.send_reply(reply_text, notif)
