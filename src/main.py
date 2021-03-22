@@ -23,7 +23,7 @@ def main():
         for notif in save_bot.check_inbox(rkind="t1", read_if_not_rkind=True):
             if "save" in notif.body.lower():
                 save.upload_and_send_from_notif(notif)
-        sleep(7)
+        sleep(15)
 
 
 if __name__ == "__main__":
